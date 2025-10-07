@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2 Phonics Part B Dispatch</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2a64c4;
+            --dark-blue: #1e3a66;
+            --background-gray: #f4f7f9;
+            --text-dark: #334e68;
+            --text-light: #6a7c92;
+            --border-color: #e0e6ed;
+            --accent-green: #38b2ac;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .info-item i {
+            font-size: 1rem;
+        }
+
+        .main-content {
+            padding: 40px;
+            display: grid;
+            gap: 25px;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1.2fr;
+            }
+        }
+
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(42, 100, 196, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .school-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--background-gray);
+        }
+
+        .school-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .school-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .school-item:last-child {
+            border-bottom: none;
+        }
+
+        .school-item:hover, .school-item.active {
+            background-color: #eaf3ff;
+        }
+
+        .school-item:hover {
+            transform: translateX(5px);
+        }
+
+        .dispatch-display {
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .dispatch-display h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #d1e2ff;
+        }
+
+        .dispatch-note {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        .school-info {
+            background-color: #f0f4f9;
+            color: var(--text-dark);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            text-align: left;
+            border-left: 5px solid var(--primary-blue);
+            width: 100%;
+            display: none;
+        }
+
+        .school-info h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-blue);
+        }
+
+        .school-details p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+        
+        .quantity-box {
+            margin-top: 20px;
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .quantity-box h4 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .quantity-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .quantity-note {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .summary-section {
+            grid-column: 1 / -1; /* Span both columns in grid layout */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding-top: 30px;
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .summary-card {
+            background-color: #fdfdff;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--accent-green);
+        }
+
+        .summary-card h3 {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .summary-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        /* Scrollbar styles for modern browsers */
+        .school-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .school-list-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .school-list-container::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 10px;
+        }
+        .school-list-container::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>H2 Phonics Part B Dispatch</h1>
+            <p class="subtitle">School List with Quantities</p>
+            <div class="header-info">
+                <div class="info-item">
+                    <i class="fas fa-school"></i>
+                    <span>Schools Database</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>List 25-26</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search for a school...">
+                </div>
+                <div class="school-list-container">
+                    <ul id="schoolList" class="school-list">
+                        </ul>
+                </div>
+            </section>
+
+            <section class="dispatch-section">
+                <div class="dispatch-display">
+                    <h3>Dispatch Information</h3>
+                    <div class="dispatch-note" id="dispatchNote">
+                        Select a school from the list to view its dispatch information.
+                    </div>
+                    
+                    <div class="school-info" id="schoolInfo">
+                        <h4><i class="fas fa-info-circle"></i> School Details</h4>
+                        <div class="school-details">
+                            <p><strong>Name:</strong> <span id="schoolName"></span></p>
+                            <p><strong>Address:</strong> <span id="schoolAddress"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="quantity-box" id="quantityBox">
+                        <h4><i class="fas fa-box"></i> Quantity to be Dispatched</h4>
+                        <div class="quantity-value" id="quantityValue"></div>
+                        <p class="quantity-note">
+                            For any changes, please message <strong>+91 97432 83588</strong>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <section class="summary-section">
+            <div class="summary-card">
+                <h3>Total Schools</h3>
+                <div class="summary-value" id="totalSchools">0</div>
+            </div>
+            <div class="summary-card">
+                <h3>Total Quantity</h3>
+                <div class="summary-value" id="totalQuantity">0</div>
+            </div>
+            <div class="summary-card">
+                <h3>Average Quantity</h3>
+                <div class="summary-value" id="averageQuantity">0</div>
+            </div>
+        </section>
+
+        <footer>
+            <p>H2 Phonics Part B Dispatch - School List Management System</p>
+            <p>&copy; 2025 Education Resource Distribution</p>
+        </footer>
+    </div>
+
+    <script>
+        // Refactored data to be an array of objects for better structure and scalability.
+        const schoolData = [
+            { label: "PINNACLE ACADEMY LILONG KALEIKHONG CROSSING ROAD TOLENKHUL THOUBAL MANIPUR-795130 LILONG MANIPUR", quantity: 90 },
+            { label: "Huda Public school, Near Badi Masjid, Kesharpur, Cuttack, Odisha", quantity: 25 },
+            { label: "JAME-UL-ULOOM ENGLISH NURSERY, PRIMARY AND HIGH SCHOOL. S.J.P. ROAD BANGALORE Pin Code: 560002", quantity: 40 },
+            { label: "Modern English SchooL annepalya 560030", quantity: 15 },
+            { label: "Sana model school", quantity: 70 },
+            { label: "THE SANA NURSERY AND PRIMARY SCHOOl # 4/17 VARADARAJULU STREET, EGMORE, CHENNAi 600008", quantity: 70 },
+            { label: "western English School 154, Western Park Kashimira Mira Road East , Thane - 401107 Mob: 8898983412", quantity: 125 },
+            { label: "Wisdom International School, Aakifah Complex ,112 Teacher Colony, Khamgaon -444303 Dist- Buldana , MS", quantity: 5 },
+            { label: "ST HARIS HIGH SCHOOl behind al-shams masjid, Naya Nagar, Mira Road East, Maharashtra 401107", quantity: 110 },
+            { label: "Solomon School", quantity: 90 },
+            { label: "Noble Creative School Bandiyod Bandiyod Post Baidala Square Complex Mangalpadi Kasaragod District. Kerala.", quantity: 21 },
+            { label: "IQRA MONTESSORI SCHOOL, BAGAYAT GALI, BEHIND JAMIYA MASJID, J.M.ROA 586104", quantity: 10 },
+            { label: "ubk Model English High school Bilwaradahalli bg road Bangalore 560083", quantity: 25 },
+            { label: "MS ACADEMY MOHAMMADIYA COMPOUND MANNAMKUZHI MAIDAN ROAD,FIRDOUSE NAGAR", quantity: 120 },
+            { label: "SAINT TACT PRE-SCHOOL C-53, Gandhi Nagar, Kadugondanahalli, Bengaluru, Karnataka 560045", quantity: 60 },
+            { label: "SANA SMART MATRICULATION SCHOOL Pin Code: 600012 Delivery Address: 13/3 B PERAMBUR HIGH ROAD, FIRST STREET, CHENNAI -12", quantity: 50 },
+            { label: "Al Huda Gujrat ADDRESS: 12 NILU PARK SAAHEBNAGAR T.P.85. OPP.AMBER TOWER. SARKHEJ AHMEDABAD Pin Code: 380055", quantity: 40 },
+            { label: "Modern public school Khan manzil opposite ravidas mandir , satta chownk malerkotla 148023", quantity: 10 },
+            { label: "British Arabic International School Friends Colony, Gopalganj", quantity: 15 },
+            { label: "SJM SCHOOL 560002 SJM Nursery Primary & High school Ilahi Begum", quantity: 15 },
+            { label: "PATEL PUBLIC SCHOOL 59, VISHAL NAGAR, OLD HUBLI-580024", quantity: 40 },
+            { label: "MS GLOBAL SCHOOL, UJIRE, KALIYOOR, PO VORKADY, MORTHANA", quantity: 26 },
+            { label: "BLOSSOM PUBLIC SCHOOl No.39/2, 8th Main Road, Padarayanapura, Bangalore", quantity: 40 },
+            { label: "K H MATRIC GIRLS HR SEC SCHOOL 1/16, KHIZARABAD 1ST STREET, MELVISHARAM RANIPET, TAMIL NADU", quantity: 175 },
+            { label: "13th cross, Rashadnagar Huda National preschool Bangalore - 560045 CN: 9449158628", quantity: 1 },
+            { label: "New Excellent Public English School 560036 Devasandra Aslam", quantity: 50 },
+            { label: "H R INTERNATIONAL SCHOOL : #3063 INDLABELE MAIN ROAD ,ATTIBELE ANEKAL TALUK BANGALURU DIST", quantity: 30 },
+            { label: "madni school belgaum Beside Momin Food Centre, Subhash Nagar, Belagavi", quantity: 40 },
+            { label: "Hidhayath Matriculation SchooL Opposite to Periyar Maniammai University 613403", quantity: 45 },
+            { label: "IMAM SHAFI (RAH) MATRIC HIGHER SECONDARY SCHOOL NO 60-A PATTUKKOTTAI ROAD, ADIRAMPATTINAM", quantity: 120 },
+            { label: "AL-FURQAN ISLAMIC ENGLISH MEDIUM SCHOOL AL-FURQAN CENTRE, POST MITHABAIL, PUTHIGE, MOODBIDRI 574226 D.K KARNATAKA", quantity: 50 },
+            { label: "New Danish English Medium school : Madani colony JP Nagar Gokul road Hubli 580030 Hubli Karnataka 7338381926", quantity: 85 },
+            { label: "MADRSATHU THAQWA VALANCHERY PATAMBI ROAD, VALIYAKUNNU PO, ALINCHUVADU, VALANCHERY, MALAPPURAM 676552", quantity: 20 },
+            { label: "DIVINE ENGLISH MEDIUM SCHOOL Badepur Layout, Near MAM pharmacy College, Beside Faraan Boys PU College", quantity: 50 },
+            { label: "RAAHA SCHOOL NEEDS", quantity: 202 },
+            { label: "Hilal School poultry farm area Ghousiya Nagar mysore 570019", quantity: 30 },
+            { label: "Usmaniya Usmaniya Primary School Kerebilchi Kerebilchi channagiri tq Davangere dist Karnataka - 577218", quantity: 61 },
+            { label: "MADRASATHUL FALAH MADEENA MASJID CAMPUS CHANGUVETTY KOTTAKKAL EDARIKODE PO MALAP 676501", quantity: 45 },
+            { label: "safa the kids 500004 11-5-589 ,Redhills , Opposite Nampally criminal court ,Teen posh masjid Hyderabad", quantity: 85 },
+            { label: "salsasabil #112/B2, Agrahara entrance, Kogil Road Yelahanka Bangalore", quantity: 9 },
+            { label: "Al Huda uni Kids School Red peer beedi building, opposite Asif Stores near Old Mutton Market, RPL Road,Hassan", quantity: 65 },
+            { label: "S.P.L. School 16-3-991/1/G, New Malakpet, Hyderabad, Telangana 500059", quantity: 25 },
+            { label: "IQRA FOUNDATION EDUCATION WELFARE CHARITABLE TRUST 747, SIDLINGAPURA TQ, HALE KEASARE VILLAGE, Mysuru, Karnataka, 570007", quantity: 130 },
+            { label: "JAMIAT-US-SALIHAT ARABIC SCHOOL Dubai Nagar Chikkamagalur 577101", quantity: 20 },
+            { label: "Huda national school 13th cross Rashadnagar Govindpura AC post Bangalore 45", quantity: 1 },
+            { label: "Noble Creative School Bandiyod Kumbla, Kasaragod District, Kerala 671324", quantity: 20 },
+            { label: "BANGLORE SCOTTISH SCHOOL 16/11, 4TH CROSS, BHARTH NAGER THANISANDRA,S R K POST, MILK DAIRY ROAD, 9886433135 Bangalore 560077", quantity: 20 },
+            { label: "Ghaisul huda public school maula building near cake point gollahalli main road Shikari palya Electronic City phase I", quantity: 15 },
+            { label: "TIPPU MEMORIAL SCHOOL Al - Badar Masjid Complex, Rajiv Nagar, Mysore", quantity: 15 },
+            { label: "FAIZUL ISLAM PUBLIC SCHOOL, SHIRVA NEAR MASJID CROSS ROAD POST SHIRVA- 574116 KARNATAKA", quantity: 25 },
+            { label: "Peace Creative School (HOSANGADI) KUNJATHUR Near Noor Masjid Kunjathur, Manjeshwar-671323", quantity: 96 },
+            { label: "Ryan International Green School, near manikkakavu, kannothumchal, P. O chovva, kannnur Pin Code: 670006", quantity: 50 },
+            { label: "asra public mysore #10, 6th C cross Gangondanahalli Bangalore", quantity: 15 },
+            { label: "B. S Nursery and Primary school No. 6 Gopal Chetty street, Rajaji Salai Chennai 600001", quantity: 80 },
+            { label: "Madni English Medium Lower Primary School Ledger Account Balekundri B.K. Near Panchayat office, Balekundri 591103", quantity: 25 },
+            { label: "ALFA ENGLISH MEDIUM SCHOOl 4th street,Near Shramadanam Bridge ,Teachers colony ,Nandya", quantity: 25 },
+            { label: "Asra Girls School 74/2, Site No. 7, Opp. Saba Plaza Function Hall, P & T Quarters Road, Udayagiri, Mysuru - 570019", quantity: 35 },
+            { label: "Holy Mariam Convent3rd main road, J Cross Rd, Bismillahnagar, Bengaluru, Karnataka 560029", quantity: 25 },
+            { label: "ALI PROGRESSIVE E/M SCHHOL KANEKAL ROAD,Ananthpur District ,Andhra pradesh,RAYADURG -A.P 515865", quantity: 30 },
+            { label: "SAFA MATRIC HR SEC SCHOOL 632301 PENSION LION MASJID COMPLEX ARNI", quantity: 30 },
+            { label: "Nomani Play centre,opp Noorani Masjid, Mahatma fule Bazar Nagpur Maharashtra", quantity: 75 },
+            { label: "Blossom public school 39/2, 8th Main Road, Padarayanapura, Bangalore 560026", quantity: 25 },
+            { label: "Little flower chennai 18/14 JAWAHAR HUSSAIN KHAN 2ND STREET ROYAPETTAH CHENNAI - 14 CHENNAI TAMILNADU", quantity: 30 },
+            { label: "# 69,behind Al-Ameen towers, near lalbagh main gate, hosur road, bangalore- 560 027", quantity: 40 },
+            { label: "Trillium public school", quantity: 20 },
+            { label: "ASHRAF MODEL SCHOOL Near Idara Ashraf Ul Uloom Trust,Khaja Bagh, Saidabad, Hyderabad 500059, Telangana", quantity: 25 },
+            { label: "JAMIAT-US-SALIHAT ARABIC SCHOOL Dubai Nagar, fourth Cross near Firdous Masjid Chikkamagalur 577101", quantity: 21 },
+            { label: "Florida English school 11th d cross, padarayanapura bangalore 560 026", quantity: 100 },
+            { label: "Noble Academy Tasco Steels Building, near Kandathpalli, Lower Carstreet, Bunder, Mangalore -575001", quantity: 16 },
+            { label: "IQRA ENGLISH MEDIUM SCHOOL VIJAYAPUR s: Ward No 24 J M Road Bagayat Galli Bijapur 586104", quantity: 15 },
+            { label: "Ar-Raheem School, Madina Masjid complex, K. R. Puram, Bengaluru-560036", quantity: 10 },
+            { label: "MOUNT SAFA PUBLIC SCHOOL ADDRESS: Chand Colony inside Kolur base near Raj Baksh Dargha shahapur pin code - 585223 Yadgir", quantity: 25 },
+            { label: "AR-RASHAD NATIONAL SCHOOL A.G. ROAD, OPPOSITE TO JAMIYA SHADI MAHAL, CHALLAKERE - 577522 CHALLAKERE & KARNATAKA", quantity: 20 },
+            { label: "GREENLAND SCHOOL D-No-18/497, COURT ROAD, YEMMIGANUR, KURNOOL(DT.), A.P.-518360 YEMMIGANUR & ANDHRA PRADESH", quantity: 30 },
+            { label: "Millenium English Medium School Village – Basu, Taluka – Vadgam Dist – Banaskantha, North Gujarat – 385520.", quantity: 42 },
+            { label: "Mothers touch convent school 2nd main, 2nd cross, Saysam Layout, Nittuvalli Road, Davangere-577002", quantity: 22 },
+            { label: "Mohammadiya English medium school Ghataprabha ar Bilal Masjid Mrutyunjay circle Ghataprabha Tq.Gokak dist. Belgaum 591306", quantity: 15 },
+            { label: "National public school:- Word no 7 Alampur peth Opp darga ilkal 587154", quantity: 48 },
+            { label: "Ali Public School Nidagundi Dist: Vijayapura, Tq: Nidagundi Pincode: 586213", quantity: 34 },
+            { label: "Wisdom International School 112,Aakifah Complex,Teacher Colony ,Khamgaon 444303", quantity: 10 },
+            { label: "EXCELLENT ENGLISH SCHOOL#11, 3rd Cross & #27, 4th Cross, Pottery Town Extn, Bengaluru", quantity: 10 },
+            { label: "HUDA MONTESSORI BESIDE MASJID E AZAM , 1st CROSS , GUNDLUPET ROAD, A P MOHALLA, CHAMARAJANAGAR.571313", quantity: 30 },
+            { label: "Noble Oaks International School Karmad, Karmad - Ladsawangi Road, Behind of Rahat Medical Store, Taluka and District Aurangabad, Maharashtra. Pin Code 431007", quantity: 35 },
+            { label: "Al Hasan International School Jalgaon Maharashtra 425001 Noor campus, plot no 31, Salar Nagar, Near Ajanta Square Jalgaon Maharashtra", quantity: 46 },
+            { label: "Iqra urdu higher primary school Iqra urdu higher primary school, arahalli road millat nagar kolar", quantity: 15 },
+            { label: "OXFORD HIGH SCHOOL No 1004 Old Post office road Kaliapet KOLAR Karnataka. Pin code 563101", quantity: 15 },
+            { label: "zeenat school", quantity: 25 },
+            { label: "Ideal Global E.M School, Opposite Fathe Khan Masjid, Beside C.K Shadi Mahal, Kagithala Penta, Kadapa - 516003 Andhra Pradesh", quantity: 30 },
+            { label: "IDEAL SCHOOL RAKHEMGERA SHAHAPUR 585 223 DIST YADGIR KARNATAKA 8050488911", quantity: 30 },
+            { label: "DARUL ULOOM ENGLISH MEDIUM SCHOOL MUDALG : GOKAK - VRL Logistics Gokak, Belgaum, Karnataka 192/1 JADHAV GINNING FACTO", quantity: 15 },
+            { label: "ALFA ENGLISH MEDIUM SCHOOL Near Shramadanam Bridge ,Teacher Colony ,4 th Street,Nandyal Nandyal : 518501", quantity: 20 },
+            { label: "H R international school Attibele anekal Taluk Bangalore D Karnatak 562107", quantity: 10 },
+            { label: "Asra girls school 74/2 site no 7 opposite to Saba function hall Udayagiri mysuru", quantity: 10 },
+            { label: "Shanti Sagar School kerebilchi Shanti Sagar School kerebilchi 577218", quantity: 20 },
+            { label: "Huda Primary School Linganapura road, T C Hundi Kollegal-571440", quantity: 25 },
+            { label: "florida", quantity: 90 },
+            { label: "Trillium public school 31/1,7th Cross dasappa Garden RT nagar Bangalor", quantity: 28 },
+            { label: "Ideal International schooL Ideal International school,Pardhade Road,Nera PJ Railway Gate, 424201", quantity: 20 },
+            { label: "bangalore scottish school", quantity: 10 },
+            { label: "Huda public school ... K M Badavane. Periyapatna : Mysore distic : Pin code 571107", quantity: 20 },
+            { label: "BS NURSERY AND PRIMARY SCHOOL NO: 6, Gopal Chetty Street, Rajaji Salai, Mannady, Chennai 600 001 9952099797", quantity: 10 },
+            { label: "GENIUS MODEL (NURSARY)SCHOOL MURGOD PENDARI GALLI MURGOD TQ SAVADATTI DIST BELGAUM KARNATAKA 591119 BELGAUM", quantity: 7 },
+            { label: "SALAMAH NURSERY AND PRIMARY SCHOOL 25/A ISMAIL STREET, KOOTHANALLUR", quantity: 2 },
+            { label: "GREENLAND SCHOOL D-No: 18/497, Court Road, Near Quibla Quarters, Yemmiganur, Kurnool (District), Andhra", quantity: 25 },
+            { label: "BLOSSOM PUBLIC SCHOOL", quantity: 10 },
+            { label: "Al Huda Gujrat ADDRESS: 12 NILU PARK SAAHEBNAGAR T.P.85. OPP.AMBER TOWER. SARKHEJ AHMEDABAD", quantity: 10 },
+            { label: "Al huda english medium school kudachi", quantity: 40 },
+            { label: "Trillium kids JH Shaikh, #1495, near subhas nagar masjid, Basaveshwara nagar, Dandel", quantity: 15 },
+            { label: "Al Hasan International School Jalgaon Noor campus plot no 31, Salar Nagar Near Ajanta Square Jalgaon", quantity: 18 },
+            { label: "IQRA ENGLISH MEDIUM SCHOOL MUDDEBIHAL Maruti nagar near Tayaba masjid Muddebihal 586212", quantity: 15 },
+            { label: "JUNNEDIYA ENGLISH MEDIUM PRE - PRIMARY SCHOOL NEW JUNNEDIYA CAMPUS, UGAR ROAD, KUDACHI - 591311 Rayabaga Taluk Belgaum Dist KUDACHI & KARNATAKA", quantity: 15 },
+            { label: "Ideal english medium school kusumba jalgaon", quantity: 15 },
+            { label: "Iqra Education Society, Jalgaon. B. M. JAIN URDU PRIMARY SCHOOL Behind Dr. Sikhchi's Hospital, Pratap Nagar, Jalgaon. 425001", quantity: 20 },
+            { label: "Iqra Education Society's DR. SHAHEEN QAZI URDU PRIMARY SCHOOL S.No.101, Iqra Campus, Mehrun, Jalgaon 425 003", quantity: 25 },
+            { label: "Madni English Medium School Beside Momin Food Centre, Subhash Nagar, Belagavi. 590016", quantity: 10 },
+            { label: "Ali Public School Nidagundi : At post: 586201 , Almatti dam site , tq: Nidagundi. Dist: Vijayapur yakoobkhan bodalekhan", quantity: 16 },
+            { label: "Imam Shafi (rah) Matric Hr. Sec. School - 60-A, Pattukkottai Road Adirampattinam,-614701, Pattukkottai taluk, Thanjavur District, Tamil Nadu", quantity: 30 },
+            { label: "MUBARAKAH PUBLIC SCHOOL MUBARAK NAGAR THIGALARAPALYA MAIN ROAD NEAR PEENYA 2ND STAGE BANGALORE 560058", quantity: 25 },
+            { label: "Peace Public School, PO Permannur, Kallapu, Ullal, Mangalore 575017", quantity: 20 },
+            { label: "SHANTI SAGAR SCHOOL KEREBILCHI EIDGA MAIN ROAD KEREBILCHI , CHANNAGIRI TQ , DAVANGERE DIST. 577218", quantity: 15 },
+            { label: "MADEENA PUBLIC SCHOOL MADEENA PUBLIC SCHOOL NEAR NOORANI MASJID, 14TH WARD,AMAR BHAGA", quantity: 20 },
+            { label: "Rahman Foundation's Nomani Play Centre c/o Adil Ansari s/o Asif Ahmed Ansari, Opp. Noorani Masjid, Ansar Nagar, Mominpura Nagpur", quantity: 10 },
+            { label: "Madrasa e roohul Quran higher primary and high school...Beside masjid-e-aqsa, Bismillah nagar, bannur town, Mysore district, T.narasipura taluk, Karnataka - 571101", quantity: 20 },
+            { label: "trillium 31/1,7th cross dasappa Garden, RT Nagar Post Bangalore560032", quantity: 2 },
+            { label: "IQRA ENGLISH SCHOOL BIJAPUR Delivery Address: IQRA ENGLISH MEDIUM SCHOOL BAGAYAT GALLI J M ROAD BIJAPUR 586104", quantity: 25 },
+            { label: "solomon high school Padrayana pura", quantity: 20 },
+            { label: "IDEAL INTERNATIONAL SCHOOL PARDHADE ROAD,NEAR PJ RAILWAY LINE-PACHORA DIST-JALGAON PACHORA Pincode-424201", quantity: 15 },
+            { label: "CMA Primary and High School, Behind Jadeed Eidgah, Mominpura, Old Guddadahalli, Bangalore - 560026", quantity: 20 },
+            { label: "Abdurrahman ziya Rahmani C/O Ziya Islamic Academy Address Hajiganj ward no 19 Jogbani Araria Bihar 854328", quantity: 15 },
+            { label: "IQRA CREATIVE EM SCHOOL Near Al-khair masjid MPL Road, Kadiri -515591 Sri Sathya sai dist Andhra pradesh", quantity: 20 },
+            { label: "IQRA ENGLISH MEDIUM SCHOOL MUDDEBIHAL NEAR TAYABA MASJID MUDDEBIHAL", quantity: 10 },
+            { label: "JUNNEDIYA ENGLISH MEDIUM SCHOOL NEAR APMC BUILDING, NEW CAMPUS, UGAR ROAD KUDACHI - 591311 KUDACHI - 591311", quantity: 15 },
+            { label: "Modern School, Anepalya, Bangalore.", quantity: 10 },
+            { label: "IQRA URDU PRIMARY", quantity: 15 },
+            { label: "Thaqwa Matriculation Higher Secondary School, 5/80 Nallur, Namakkal District. 637020", quantity: 10 },
+        ];
+
+        const schoolListEl = document.getElementById('schoolList');
+        const searchInput = document.getElementById('searchInput');
+        const dispatchNote = document.getElementById('dispatchNote');
+        const schoolInfoEl = document.getElementById('schoolInfo');
+        const schoolNameEl = document.getElementById('schoolName');
+        const schoolAddressEl = document.getElementById('schoolAddress');
+        const quantityBox = document.getElementById('quantityBox');
+        const quantityValueEl = document.getElementById('quantityValue');
+        const totalSchoolsEl = document.getElementById('totalSchools');
+        const totalQuantityEl = document.getElementById('totalQuantity');
+        const averageQuantityEl = document.getElementById('averageQuantity');
+        
+        function updateSummary() {
+            const totalSchools = schoolData.length;
+            const totalQuantity = schoolData.reduce((sum, school) => sum + school.quantity, 0);
+            const averageQuantity = totalSchools > 0 ? (totalQuantity / totalSchools).toFixed(1) : 0;
+
+            totalSchoolsEl.textContent = totalSchools;
+            totalQuantityEl.textContent = totalQuantity;
+            averageQuantityEl.textContent = averageQuantity;
+        }
+
+        function renderSchools(schools) {
+            schoolListEl.innerHTML = '';
+            if (schools.length === 0) {
+                schoolListEl.innerHTML = '<li class="school-item" style="cursor:default; text-align:center; color:#888;">No schools found.</li>';
+                return;
+            }
+            schools.forEach((school, index) => {
+                const li = document.createElement('li');
+                li.className = 'school-item';
+                li.textContent = school.label;
+                li.dataset.schoolIndex = index;
+                schoolListEl.appendChild(li);
+            });
+        }
+
+        function displaySchoolInfo(schoolIndex) {
+            const school = schoolData[schoolIndex];
+            
+            // Show the info and quantity box
+            schoolInfoEl.style.display = 'block';
+            dispatchNote.style.display = 'none';
+
+            // Set the content
+            const parts = school.label.split(',');
+            schoolNameEl.textContent = parts[0];
+            schoolAddressEl.textContent = parts.slice(1).join(',').trim() || "Address not available";
+            quantityValueEl.textContent = school.quantity;
+            
+            // Set the active class
+            const allItems = document.querySelectorAll('.school-item');
+            const activeItem = document.querySelector(`[data-school-index="${schoolIndex}"]`);
+            allItems.forEach(item => item.classList.remove('active'));
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+
+        function filterSchools() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filtered = schoolData.filter(school =>
+                school.label.toLowerCase().includes(searchTerm)
+            );
+            renderSchools(filtered);
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', filterSchools);
+
+        schoolListEl.addEventListener('click', (e) => {
+            const clickedItem = e.target.closest('.school-item');
+            if (clickedItem && clickedItem.dataset.schoolIndex) {
+                displaySchoolInfo(clickedItem.dataset.schoolIndex);
+            }
+        });
+        
+        // Initial render
+        updateSummary();
+        filterSchools();
+    </script>
+</body>
+</html>
